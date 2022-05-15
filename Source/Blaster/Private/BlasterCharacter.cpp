@@ -6,6 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 ABlasterCharacter::ABlasterCharacter()
@@ -24,6 +25,9 @@ ABlasterCharacter::ABlasterCharacter()
 
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	OverHeadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Over Head Widget"));
+	OverHeadWidget->SetupAttachment(RootComponent);
 }
 
 void ABlasterCharacter::BeginPlay()
