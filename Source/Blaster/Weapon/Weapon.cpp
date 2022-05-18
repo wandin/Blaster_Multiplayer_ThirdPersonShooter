@@ -7,6 +7,8 @@
 #include "Components/WidgetComponent.h"
 #include "BlasterCharacter.h"
 
+#include "Net/UnrealNetwork.h"
+
 // Sets default values
 AWeapon::AWeapon()
 {
@@ -58,6 +60,13 @@ void AWeapon::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+// Replicates the Weapon State in order to hide the Pickup Widget
+void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWeapon, WeaponState);
+}
 
 void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -76,6 +85,30 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 		BlasterCharacter->SetOverlappingWeapon(nullptr);
 	}
 }
+
+void AWeapon::SetWeaponState(EWeaponState State)
+{
+	WeaponState = State;
+	switch (WeaponState)
+	{
+	case EWeaponState::EWS_Equipped:
+		ShowPickupWidget(false);
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision); // Collision disabled when the weapon is already equipped, Overlaps are only happening on the server
+		break;
+	}
+}
+// Update the Weapon State with RepNotify, in order to hide the widget in all clients if someone picks a weapon
+void AWeapon::OnRep_WeaponState()
+{
+	switch (WeaponState)
+	{
+	case EWeaponState::EWS_Equipped:
+		ShowPickupWidget(false);
+		break;
+	}
+}
+
+
 
 void AWeapon::ShowPickupWidget(bool bShowWidget)
 {
