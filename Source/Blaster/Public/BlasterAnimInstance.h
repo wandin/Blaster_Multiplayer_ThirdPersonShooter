@@ -37,4 +37,14 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
 	bool bAiming;
 
+	// leaning and strafing
+	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
+	float YawOffSet;
+	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
+	float Lean;
+
+	FRotator CharacterRotationLastFrame;
+	FRotator CharacterRotation;
+	FRotator DeltaRotation;
+
 };

@@ -5,6 +5,7 @@
 
 #include "BlasterCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 void UBlasterAnimInstance::NativeInitializeAnimation()
@@ -33,4 +34,20 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bWeaponEquipped = BlasterCharacter->IsWeaponEquipped();
 	bIsCrouched = BlasterCharacter->bIsCrouched;
 	bAiming = BlasterCharacter->IsAiming();
+
+	// STRAFING Offset Yaw
+	FRotator AimRotation = BlasterCharacter->GetBaseAimRotation();
+	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(BlasterCharacter->GetVelocity());
+	FRotator DeltaRot = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation); // Get the delta between movementrotation and aimrotation
+	DeltaRotation = FMath::RInterpTo(DeltaRotation, DeltaRot, DeltaTime, 6.f); // interp smoothly rotation
+	YawOffSet = DeltaRotation.Yaw;
+
+
+	CharacterRotationLastFrame = CharacterRotation;
+	CharacterRotation = BlasterCharacter->GetActorRotation();
+	
+	const FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame); // Get the delta Rotation between values
+	const float Target = Delta.Yaw / DeltaTime; // scale the difference between CharacterRotation  CharacterRotationLastFrame, and make proportional to deltatime
+	const float Interp = FMath::FInterpTo(Lean, Target, DeltaTime, 6.f); // interp values to make transition smoother
+	Lean = FMath::Clamp(Interp, -90.f, 90.f); // clamp to avoid crazy moves if we move the mouse too fast 
 }

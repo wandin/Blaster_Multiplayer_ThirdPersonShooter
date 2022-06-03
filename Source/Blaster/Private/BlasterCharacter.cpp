@@ -11,6 +11,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Blaster/Weapon/Weapon.h"
 #include "Blaster/Components/CombatComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ABlasterCharacter::ABlasterCharacter()
@@ -37,6 +38,8 @@ ABlasterCharacter::ABlasterCharacter()
 	Combat->SetIsReplicated(true);
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true; // Can crouch
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
