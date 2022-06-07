@@ -50,4 +50,7 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	const float Target = Delta.Yaw / DeltaTime; // scale the difference between CharacterRotation  CharacterRotationLastFrame, and make proportional to deltatime
 	const float Interp = FMath::FInterpTo(Lean, Target, DeltaTime, 6.f); // interp values to make transition smoother
 	Lean = FMath::Clamp(Interp, -90.f, 90.f); // clamp to avoid crazy moves if we move the mouse too fast 
+
+	AO_Yaw = BlasterCharacter->GetAO_Yaw();
+	AO_Pitch = BlasterCharacter->GetAO_Pitch();
 }
